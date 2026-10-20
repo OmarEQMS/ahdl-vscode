@@ -1,0 +1,27 @@
+1:1 "--" comment.line.double-dash.ahdl punctuation.definition.comment.ahdl
+1:3 " Prototype for an 8-bit down-counting timer (sample include file)" comment.line.double-dash.ahdl
+2:1 "FUNCTION" storage.type.function.ahdl
+2:9 " " source.ahdl
+2:10 "timer8" entity.name.function.prototype.ahdl
+2:16 " (clock" source.ahdl
+2:23 "," punctuation.separator.comma.ahdl
+2:24 " load" source.ahdl
+2:29 "," punctuation.separator.comma.ahdl
+2:30 " data[" source.ahdl
+2:36 "7" constant.numeric.decimal.ahdl
+2:37 ".." keyword.operator.range.ahdl
+2:39 "0" constant.numeric.decimal.ahdl
+2:40 "])" source.ahdl
+3:1 "\t" source.ahdl
+3:2 "WITH" storage.type.ahdl
+3:6 " (WIDTH)" source.ahdl
+4:1 "\t" source.ahdl
+4:2 "RETURNS" storage.type.ahdl
+4:9 " (done" source.ahdl
+4:15 "," punctuation.separator.comma.ahdl
+4:16 " count[" source.ahdl
+4:23 "7" constant.numeric.decimal.ahdl
+4:24 ".." keyword.operator.range.ahdl
+4:26 "0" constant.numeric.decimal.ahdl
+4:27 "])" source.ahdl
+4:29 ";" punctuation.terminator.statement.ahdl

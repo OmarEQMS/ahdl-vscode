@@ -1,0 +1,342 @@
+1:1 "TITLE" storage.type.ahdl
+1:6 " " source.ahdl
+1:7 "\"" string.quoted.double.ahdl punctuation.definition.string.begin.ahdl
+1:8 "Traffic light controller (AHDL sample)" string.quoted.double.ahdl
+1:46 "\"" string.quoted.double.ahdl punctuation.definition.string.end.ahdl
+1:47 ";" punctuation.terminator.statement.ahdl
+3:1 "--" comment.line.double-dash.ahdl punctuation.definition.comment.ahdl
+3:3 " Open this file with the extension installed and try:" comment.line.double-dash.ahdl
+4:1 "--" comment.line.double-dash.ahdl punctuation.definition.comment.ahdl
+4:3 "   * type \"ss.\" on an empty line in the logic section  -> clk, reset, ena" comment.line.double-dash.ahdl
+5:1 "--" comment.line.double-dash.ahdl punctuation.definition.comment.ahdl
+5:3 "   * type \"tmr.\" -> ports read from timer8.inc" comment.line.double-dash.ahdl
+6:1 "--" comment.line.double-dash.ahdl punctuation.definition.comment.ahdl
+6:3 "   * type \"ss = \" -> the machine's states" comment.line.double-dash.ahdl
+7:1 "--" comment.line.double-dash.ahdl punctuation.definition.comment.ahdl
+7:3 "   * hover / F12 on timer8, ss, DFFE, YELLOW_TICKS" comment.line.double-dash.ahdl
+9:1 "INCLUDE" storage.type.ahdl
+9:8 " " source.ahdl
+9:9 "\"" string.quoted.double.ahdl punctuation.definition.string.begin.ahdl
+9:10 "timer8.inc" string.quoted.double.ahdl
+9:20 "\"" string.quoted.double.ahdl punctuation.definition.string.end.ahdl
+9:21 ";" punctuation.terminator.statement.ahdl
+11:1 "CONSTANT" storage.type.ahdl
+11:9 " YELLOW_TICKS " source.ahdl
+11:23 "=" keyword.operator.assignment.ahdl
+11:24 " " source.ahdl
+11:25 "3" constant.numeric.decimal.ahdl
+11:26 ";" punctuation.terminator.statement.ahdl
+13:1 "PARAMETERS" storage.type.ahdl
+14:1 "(" source.ahdl
+15:1 "\tGREEN_TICKS " source.ahdl
+15:14 "=" keyword.operator.assignment.ahdl
+15:15 " " source.ahdl
+15:16 "8" constant.numeric.decimal.ahdl
+16:1 ")" source.ahdl
+16:2 ";" punctuation.terminator.statement.ahdl
+18:1 "SUBDESIGN" storage.type.subdesign.ahdl
+18:10 " " source.ahdl
+18:11 "traffic" entity.name.function.subdesign.ahdl
+19:1 "(" source.ahdl
+20:1 "\tclk" source.ahdl
+20:5 "," punctuation.separator.comma.ahdl
+20:6 " reset        " source.ahdl
+20:20 ":" punctuation.separator.colon.ahdl
+20:21 " " source.ahdl
+20:22 "INPUT" storage.modifier.direction.ahdl
+20:27 ";" punctuation.terminator.statement.ahdl
+21:1 "\tcar_waiting       " source.ahdl
+21:20 ":" punctuation.separator.colon.ahdl
+21:21 " " source.ahdl
+21:22 "INPUT" storage.modifier.direction.ahdl
+21:27 " " source.ahdl
+21:28 "=" keyword.operator.assignment.ahdl
+21:29 " " source.ahdl
+21:30 "GND" constant.language.ahdl
+21:33 ";" punctuation.terminator.statement.ahdl
+22:1 "\tred" source.ahdl
+22:5 "," punctuation.separator.comma.ahdl
+22:6 " yellow" source.ahdl
+22:13 "," punctuation.separator.comma.ahdl
+22:14 " green " source.ahdl
+22:21 ":" punctuation.separator.colon.ahdl
+22:22 " " source.ahdl
+22:23 "OUTPUT" storage.modifier.direction.ahdl
+22:29 ";" punctuation.terminator.statement.ahdl
+23:1 "\tdebug[" source.ahdl
+23:8 "1" constant.numeric.decimal.ahdl
+23:9 ".." keyword.operator.range.ahdl
+23:11 "0" constant.numeric.decimal.ahdl
+23:12 "]       " source.ahdl
+23:20 ":" punctuation.separator.colon.ahdl
+23:21 " " source.ahdl
+23:22 "OUTPUT" storage.modifier.direction.ahdl
+23:28 ";" punctuation.terminator.statement.ahdl
+24:1 ")" source.ahdl
+26:1 "VARIABLE" storage.type.ahdl
+27:1 "\tss       " source.ahdl
+27:11 ":" punctuation.separator.colon.ahdl
+27:12 " " source.ahdl
+27:13 "MACHINE" storage.type.ahdl
+27:20 " " source.ahdl
+27:21 "WITH" storage.type.ahdl
+27:25 " " source.ahdl
+27:26 "STATES" storage.type.ahdl
+27:32 " (s_red" source.ahdl
+27:39 "," punctuation.separator.comma.ahdl
+27:40 " s_green" source.ahdl
+27:48 "," punctuation.separator.comma.ahdl
+27:49 " s_yellow)" source.ahdl
+27:59 ";" punctuation.terminator.statement.ahdl
+28:1 "\ttmr      " source.ahdl
+28:11 ":" punctuation.separator.colon.ahdl
+28:12 " timer8" source.ahdl
+28:19 ";" punctuation.terminator.statement.ahdl
+29:1 "\tsync[" source.ahdl
+29:7 "1" constant.numeric.decimal.ahdl
+29:8 ".." keyword.operator.range.ahdl
+29:10 "0" constant.numeric.decimal.ahdl
+29:11 "] " source.ahdl
+29:13 ":" punctuation.separator.colon.ahdl
+29:14 " " source.ahdl
+29:15 "DFFE" support.type.primitive.ahdl
+29:19 ";" punctuation.terminator.statement.ahdl
+30:1 "\tbusy     " source.ahdl
+30:11 ":" punctuation.separator.colon.ahdl
+30:12 " " source.ahdl
+30:13 "NODE" storage.type.ahdl
+30:17 ";" punctuation.terminator.statement.ahdl
+32:1 "BEGIN" keyword.control.ahdl
+33:1 "\t" source.ahdl
+33:2 "%" comment.block.percentage.ahdl punctuation.definition.comment.begin.ahdl
+33:3 " synchronise the async input " comment.block.percentage.ahdl
+33:32 "%" comment.block.percentage.ahdl punctuation.definition.comment.end.ahdl
+34:1 "\tsync[]" source.ahdl
+34:8 "." punctuation.accessor.ahdl
+34:9 "clk" variable.other.member.port.ahdl
+34:12 " " source.ahdl
+34:13 "=" keyword.operator.assignment.ahdl
+34:14 " clk" source.ahdl
+34:18 ";" punctuation.terminator.statement.ahdl
+35:1 "\tsync[]" source.ahdl
+35:8 "." punctuation.accessor.ahdl
+35:9 "ena" variable.other.member.port.ahdl
+35:12 " " source.ahdl
+35:13 "=" keyword.operator.assignment.ahdl
+35:14 " " source.ahdl
+35:15 "VCC" constant.language.ahdl
+35:18 ";" punctuation.terminator.statement.ahdl
+36:1 "\tsync[" source.ahdl
+36:7 "0" constant.numeric.decimal.ahdl
+36:8 "]" source.ahdl
+36:9 "." punctuation.accessor.ahdl
+36:10 "d" variable.other.member.port.ahdl
+36:11 " " source.ahdl
+36:12 "=" keyword.operator.assignment.ahdl
+36:13 " car_waiting" source.ahdl
+36:25 ";" punctuation.terminator.statement.ahdl
+37:1 "\tsync[" source.ahdl
+37:7 "1" constant.numeric.decimal.ahdl
+37:8 "]" source.ahdl
+37:9 "." punctuation.accessor.ahdl
+37:10 "d" variable.other.member.port.ahdl
+37:11 " " source.ahdl
+37:12 "=" keyword.operator.assignment.ahdl
+37:13 " sync[" source.ahdl
+37:19 "0" constant.numeric.decimal.ahdl
+37:20 "]" source.ahdl
+37:21 "." punctuation.accessor.ahdl
+37:22 "q" variable.other.member.port.ahdl
+37:23 ";" punctuation.terminator.statement.ahdl
+39:1 "\tss" source.ahdl
+39:4 "." punctuation.accessor.ahdl
+39:5 "clk" variable.other.member.port.ahdl
+39:8 "   " source.ahdl
+39:11 "=" keyword.operator.assignment.ahdl
+39:12 " clk" source.ahdl
+39:16 ";" punctuation.terminator.statement.ahdl
+40:1 "\tss" source.ahdl
+40:4 "." punctuation.accessor.ahdl
+40:5 "reset" variable.other.member.port.ahdl
+40:10 " " source.ahdl
+40:11 "=" keyword.operator.assignment.ahdl
+40:12 " reset" source.ahdl
+40:18 ";" punctuation.terminator.statement.ahdl
+41:1 "\ttmr" source.ahdl
+41:5 "." punctuation.accessor.ahdl
+41:6 "clock" variable.other.member.port.ahdl
+41:11 " " source.ahdl
+41:12 "=" keyword.operator.assignment.ahdl
+41:13 " clk" source.ahdl
+41:17 ";" punctuation.terminator.statement.ahdl
+43:1 "\t" source.ahdl
+43:2 "DEFAULTS" keyword.control.ahdl
+44:1 "\t\tred " source.ahdl
+44:7 "=" keyword.operator.assignment.ahdl
+44:8 " " source.ahdl
+44:9 "GND" constant.language.ahdl
+44:12 ";" punctuation.terminator.statement.ahdl
+44:13 " yellow " source.ahdl
+44:21 "=" keyword.operator.assignment.ahdl
+44:22 " " source.ahdl
+44:23 "GND" constant.language.ahdl
+44:26 ";" punctuation.terminator.statement.ahdl
+44:27 " green " source.ahdl
+44:34 "=" keyword.operator.assignment.ahdl
+44:35 " " source.ahdl
+44:36 "GND" constant.language.ahdl
+44:39 ";" punctuation.terminator.statement.ahdl
+45:1 "\t" source.ahdl
+45:2 "END" keyword.control.ahdl
+45:5 " " source.ahdl
+45:6 "DEFAULTS" keyword.control.ahdl
+45:14 ";" punctuation.terminator.statement.ahdl
+47:1 "\t" source.ahdl
+47:2 "CASE" keyword.control.ahdl
+47:6 " ss " source.ahdl
+47:10 "IS" keyword.control.ahdl
+48:1 "\t\t" source.ahdl
+48:3 "WHEN" keyword.control.ahdl
+48:7 " s_red " source.ahdl
+48:14 "=>" keyword.operator.arrow.ahdl
+49:1 "\t\t\tred " source.ahdl
+49:8 "=" keyword.operator.assignment.ahdl
+49:9 " " source.ahdl
+49:10 "VCC" constant.language.ahdl
+49:13 ";" punctuation.terminator.statement.ahdl
+50:1 "\t\t\t" source.ahdl
+50:4 "IF" keyword.control.ahdl
+50:6 " sync[" source.ahdl
+50:12 "1" constant.numeric.decimal.ahdl
+50:13 "]" source.ahdl
+50:14 "." punctuation.accessor.ahdl
+50:15 "q" variable.other.member.port.ahdl
+50:16 " " source.ahdl
+50:17 "&" keyword.operator.logical.ahdl
+50:18 " tmr" source.ahdl
+50:22 "." punctuation.accessor.ahdl
+50:23 "done" variable.other.member.port.ahdl
+50:27 " " source.ahdl
+50:28 "THEN" keyword.control.ahdl
+51:1 "\t\t\t\tss " source.ahdl
+51:8 "=" keyword.operator.assignment.ahdl
+51:9 " s_green" source.ahdl
+51:17 ";" punctuation.terminator.statement.ahdl
+52:1 "\t\t\t\ttmr" source.ahdl
+52:8 "." punctuation.accessor.ahdl
+52:9 "load" variable.other.member.port.ahdl
+52:13 " " source.ahdl
+52:14 "=" keyword.operator.assignment.ahdl
+52:15 " " source.ahdl
+52:16 "VCC" constant.language.ahdl
+52:19 ";" punctuation.terminator.statement.ahdl
+53:1 "\t\t\t\ttmr" source.ahdl
+53:8 "." punctuation.accessor.ahdl
+53:9 "data" variable.other.member.port.ahdl
+53:13 "[] " source.ahdl
+53:16 "=" keyword.operator.assignment.ahdl
+53:17 " GREEN_TICKS" source.ahdl
+53:29 ";" punctuation.terminator.statement.ahdl
+54:1 "\t\t\t" source.ahdl
+54:4 "END" keyword.control.ahdl
+54:7 " " source.ahdl
+54:8 "IF" keyword.control.ahdl
+54:10 ";" punctuation.terminator.statement.ahdl
+55:1 "\t\t" source.ahdl
+55:3 "WHEN" keyword.control.ahdl
+55:7 " s_green " source.ahdl
+55:16 "=>" keyword.operator.arrow.ahdl
+56:1 "\t\t\tgreen " source.ahdl
+56:10 "=" keyword.operator.assignment.ahdl
+56:11 " " source.ahdl
+56:12 "VCC" constant.language.ahdl
+56:15 ";" punctuation.terminator.statement.ahdl
+57:1 "\t\t\t" source.ahdl
+57:4 "IF" keyword.control.ahdl
+57:6 " tmr" source.ahdl
+57:10 "." punctuation.accessor.ahdl
+57:11 "done" variable.other.member.port.ahdl
+57:15 " " source.ahdl
+57:16 "THEN" keyword.control.ahdl
+57:20 " ss " source.ahdl
+57:24 "=" keyword.operator.assignment.ahdl
+57:25 " s_yellow" source.ahdl
+57:34 ";" punctuation.terminator.statement.ahdl
+57:35 " tmr" source.ahdl
+57:39 "." punctuation.accessor.ahdl
+57:40 "load" variable.other.member.port.ahdl
+57:44 " " source.ahdl
+57:45 "=" keyword.operator.assignment.ahdl
+57:46 " " source.ahdl
+57:47 "VCC" constant.language.ahdl
+57:50 ";" punctuation.terminator.statement.ahdl
+57:51 " tmr" source.ahdl
+57:55 "." punctuation.accessor.ahdl
+57:56 "data" variable.other.member.port.ahdl
+57:60 "[] " source.ahdl
+57:63 "=" keyword.operator.assignment.ahdl
+57:64 " YELLOW_TICKS" source.ahdl
+57:77 ";" punctuation.terminator.statement.ahdl
+57:78 " " source.ahdl
+57:79 "END" keyword.control.ahdl
+57:82 " " source.ahdl
+57:83 "IF" keyword.control.ahdl
+57:85 ";" punctuation.terminator.statement.ahdl
+58:1 "\t\t" source.ahdl
+58:3 "WHEN" keyword.control.ahdl
+58:7 " s_yellow " source.ahdl
+58:17 "=>" keyword.operator.arrow.ahdl
+59:1 "\t\t\tyellow " source.ahdl
+59:11 "=" keyword.operator.assignment.ahdl
+59:12 " " source.ahdl
+59:13 "VCC" constant.language.ahdl
+59:16 ";" punctuation.terminator.statement.ahdl
+60:1 "\t\t\t" source.ahdl
+60:4 "IF" keyword.control.ahdl
+60:6 " tmr" source.ahdl
+60:10 "." punctuation.accessor.ahdl
+60:11 "done" variable.other.member.port.ahdl
+60:15 " " source.ahdl
+60:16 "THEN" keyword.control.ahdl
+60:20 " ss " source.ahdl
+60:24 "=" keyword.operator.assignment.ahdl
+60:25 " s_red" source.ahdl
+60:31 ";" punctuation.terminator.statement.ahdl
+60:32 " " source.ahdl
+60:33 "END" keyword.control.ahdl
+60:36 " " source.ahdl
+60:37 "IF" keyword.control.ahdl
+60:39 ";" punctuation.terminator.statement.ahdl
+61:1 "\t" source.ahdl
+61:2 "END" keyword.control.ahdl
+61:5 " " source.ahdl
+61:6 "CASE" keyword.control.ahdl
+61:10 ";" punctuation.terminator.statement.ahdl
+63:1 "\tbusy " source.ahdl
+63:7 "=" keyword.operator.assignment.ahdl
+63:8 " " source.ahdl
+63:9 "!" keyword.operator.logical.ahdl
+63:10 "tmr" source.ahdl
+63:13 "." punctuation.accessor.ahdl
+63:14 "done" variable.other.member.port.ahdl
+63:18 ";" punctuation.terminator.statement.ahdl
+63:19 "   " source.ahdl
+63:22 "--" comment.line.double-dash.ahdl punctuation.definition.comment.ahdl
+63:24 " 100% combinational" comment.line.double-dash.ahdl
+64:1 "\tdebug[] " source.ahdl
+64:10 "=" keyword.operator.assignment.ahdl
+64:11 " " source.ahdl
+64:12 "B" constant.numeric.radix.ahdl storage.type.numeric.ahdl
+64:13 "\"" constant.numeric.radix.ahdl punctuation.definition.numeric.begin.ahdl
+64:14 "0X" constant.numeric.radix.ahdl
+64:16 "\"" constant.numeric.radix.ahdl punctuation.definition.numeric.end.ahdl
+64:17 " " source.ahdl
+64:18 "#" keyword.operator.logical.ahdl
+64:19 " " source.ahdl
+64:20 "H" constant.numeric.radix.ahdl storage.type.numeric.ahdl
+64:21 "\"" constant.numeric.radix.ahdl punctuation.definition.numeric.begin.ahdl
+64:22 "0" constant.numeric.radix.ahdl
+64:23 "\"" constant.numeric.radix.ahdl punctuation.definition.numeric.end.ahdl
+64:24 ";" punctuation.terminator.statement.ahdl
+65:1 "END" keyword.control.ahdl
+65:4 ";" punctuation.terminator.statement.ahdl

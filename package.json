@@ -5,6 +5,10 @@
   "version": "0.1.0",
   "publisher": "omarq",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/omarq/ahdl-vscode.git"
+  },
   "engines": {
     "vscode": "^1.75.0"
   },
@@ -25,6 +29,12 @@
   "activationEvents": [
     "onLanguage:ahdl"
   ],
+  "scripts": {
+    "test": "node --test \"test/**/*.test.js\"",
+    "test:update": "node scripts/test-update.js",
+    "package": "vsce package --skip-license",
+    "install-local": "npm run package && node scripts/install-local.js"
+  },
   "contributes": {
     "languages": [
       {
@@ -75,5 +85,10 @@
         }
       }
     }
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^4.0.0",
+    "vscode-oniguruma": "^2.0.1",
+    "vscode-textmate": "^9.3.2"
   }
 }
