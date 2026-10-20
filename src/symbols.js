@@ -3,43 +3,52 @@
 /**
  * Lightweight, error-tolerant AHDL symbol extractor.
  * Pure JS (no `vscode` dependency) so it can be unit-tested with plain Node.
- * All offsets refer to the original text: comments are blanked, never removed.
+ * All offsets refer to the original text: comments and strings are blanked, never removed.
  */
 
 const IDENT = '[A-Za-z_][A-Za-z0-9_]*';
 
-/** Scan state at `end` (default: end of text). */
+/**
+ * Scan up to `end` (default: end of text). Returns the state there and two masked copies:
+ * `uncommented` (comments blanked) and `code` (string contents blanked too, quotes kept).
+ */
 function scan(text, end = text.length) {
   let state = 'code';
-  let out = '';
+  let uncommented = '';
+  let code = '';
+  const emit = (c, inCode = c) => { uncommented += c; code += inCode; };
   for (let i = 0; i < end; i++) {
     const c = text[i];
     switch (state) {
       case 'code':
-        if (c === '-' && text[i + 1] === '-') { state = 'line'; out += ' '; }
-        else if (c === '%') { state = 'block'; out += ' '; }
-        else { if (c === '"') state = 'string'; out += c; }
+        if (c === '-' && text[i + 1] === '-') { state = 'line'; emit(' '); }
+        else if (c === '%') { state = 'block'; emit(' '); }
+        else { if (c === '"') state = 'string'; emit(c); }
         break;
       case 'string':
-        if (c === '"') state = 'code';
-        if (c === '\n') state = 'code'; // unterminated string: recover at end of line
-        out += c;
+        // A newline ends an unterminated string: recover at end of line.
+        if (c === '"' || c === '\n') { state = 'code'; emit(c); } else emit(c, ' ');
         break;
       case 'line':
-        if (c === '\n') { state = 'code'; out += c; } else out += ' ';
+        if (c === '\n') { state = 'code'; emit(c); } else emit(' ');
         break;
       case 'block':
         if (c === '%') state = 'code';
-        out += c === '\n' ? '\n' : ' ';
+        emit(c === '\n' ? '\n' : ' ');
         break;
     }
   }
-  return { masked: out, state };
+  return { uncommented, code, state };
 }
 
 /** Text with comments replaced by spaces (same length, newlines kept). */
 function maskComments(text) {
-  return scan(text).masked;
+  return scan(text).uncommented;
+}
+
+/** Like maskComments, but string contents are blanked too. Radix literals (H"FF") count as strings. */
+function maskCommentsAndStrings(text) {
+  return scan(text).code;
 }
 
 /** 'code' | 'string' | 'line' | 'block' at the given offset. */
@@ -101,7 +110,14 @@ function parsePortList(text) {
 }
 
 function parseDocument(text) {
-  const src = maskComments(text);
+  // Match structure on `src`, where strings are blanked. Read values from `uncommented`,
+  // so literals keep their contents (H"FF", "UP"). Both have the same offsets as `text`.
+  const { uncommented, code: src } = scan(text);
+  /** Trimmed text of group `g` of a match made with the `d` flag, `base` being where the match input starts. */
+  const value = (match, g, base = 0) => {
+    const span = match.indices[g];
+    return span ? uncommented.slice(base + span[0], base + span[1]).trim() : '';
+  };
   const doc = {
     subdesign: null,
     ports: [],
@@ -116,21 +132,21 @@ function parseDocument(text) {
   let m;
 
   // INCLUDE "file.inc";
-  const incRe = /\bINCLUDE\s+"([^"]*)"/gi;
+  const incRe = /\bINCLUDE\s+"([^"]*)"/gid;
   while ((m = incRe.exec(src))) {
-    doc.includes.push({ file: m[1], offset: m.index + m[0].indexOf('"') + 1 });
+    doc.includes.push({ file: uncommented.slice(...m.indices[1]), offset: m.indices[1][0] });
   }
 
   // CONSTANT NAME = value;
-  const constRe = new RegExp(`\\bCONSTANT\\s+(${IDENT})\\s*=\\s*([^;]*);?`, 'gi');
+  const constRe = new RegExp(`\\bCONSTANT\\s+(${IDENT})\\s*=\\s*([^;]*);?`, 'gid');
   while ((m = constRe.exec(src))) {
-    doc.constants.push({ name: m[1], value: m[2].trim(), offset: m.index + m[0].indexOf(m[1], 8) });
+    doc.constants.push({ name: m[1], value: value(m, 2), offset: m.index + m[0].indexOf(m[1], 8) });
   }
 
   // DEFINE name(args) = expr;
-  const defRe = new RegExp(`\\bDEFINE\\s+(${IDENT})\\s*(\\([^)]*\\))?\\s*=\\s*([^;]*);?`, 'gi');
+  const defRe = new RegExp(`\\bDEFINE\\s+(${IDENT})\\s*(\\([^)]*\\))?\\s*=\\s*([^;]*);?`, 'gid');
   while ((m = defRe.exec(src))) {
-    doc.defines.push({ name: m[1], args: (m[2] || '').trim(), value: m[3].trim(), offset: m.index + m[0].indexOf(m[1], 6) });
+    doc.defines.push({ name: m[1], args: (m[2] || '').trim(), value: value(m, 3), offset: m.index + m[0].indexOf(m[1], 6) });
   }
 
   // PARAMETERS ( A = 1, B );
@@ -140,8 +156,8 @@ function parseDocument(text) {
     const close = matchParen(src, open);
     const body = src.slice(open + 1, close < 0 ? src.length : close);
     for (const part of splitTop(body, ',', open + 1)) {
-      const pm = new RegExp(`^(\\s*)(${IDENT})\\s*(?:=\\s*(.*))?$`, 's').exec(part.text);
-      if (pm) doc.parameters.push({ name: pm[2], value: (pm[3] || '').trim(), offset: part.start + pm[1].length });
+      const pm = new RegExp(`^(\\s*)(${IDENT})\\s*(?:=\\s*(.*))?$`, 'sd').exec(part.text);
+      if (pm) doc.parameters.push({ name: pm[2], value: value(pm, 3, part.start), offset: part.start + pm[1].length });
     }
   }
 
@@ -182,10 +198,11 @@ function parseDocument(text) {
     for (const decl of splitTop(body, ';', open + 1)) {
       const colon = decl.text.indexOf(':');
       if (colon < 0) continue;
-      const dm = /^\s*(INPUT|OUTPUT|BIDIR)\b\s*(?:=\s*(.*))?$/is.exec(decl.text.slice(colon + 1));
+      const dm = /^\s*(INPUT|OUTPUT|BIDIR)\b\s*(?:=\s*(.*))?$/isd.exec(decl.text.slice(colon + 1));
       const dir = dm ? dm[1].toUpperCase() : '';
+      const dflt = dm ? value(dm, 2, decl.start + colon + 1) : '';
       for (const n of parseNameList(decl.text.slice(0, colon), decl.start)) {
-        doc.ports.push({ ...n, dir, default: dm && dm[2] ? dm[2].trim() : '' });
+        doc.ports.push({ ...n, dir, default: dflt });
       }
     }
   }
@@ -251,4 +268,4 @@ function findDeclaration(doc, name) {
   return null;
 }
 
-module.exports = { maskComments, stateAt, matchParen, splitTop, parseDocument, findDeclaration, IDENT };
+module.exports = { maskComments, maskCommentsAndStrings, stateAt, matchParen, splitTop, parseDocument, findDeclaration, IDENT };

@@ -323,8 +323,11 @@ function provideDocumentSymbols(document) {
   }
   const top = doc.functions.map((f) => sym(f.name, 'prototype', S.Function, f.offset, f.name.length));
   if (doc.subdesign) {
+    // PARAMETERS and CONSTANT come before SUBDESIGN; start the range at the first of them so it
+    // contains every child (breadcrumbs and Follow Cursor walk down through containing ranges).
+    const first = Math.min(doc.subdesign.offset, ...doc.parameters.map((p) => p.offset), ...doc.constants.map((c) => c.offset));
+    const full = new vscode.Range(document.positionAt(first), document.positionAt(document.getText().length));
     const start = document.positionAt(doc.subdesign.offset);
-    const full = new vscode.Range(start, document.positionAt(document.getText().length));
     const sel = new vscode.Range(start, document.positionAt(doc.subdesign.offset + doc.subdesign.name.length));
     const root = new vscode.DocumentSymbol(doc.subdesign.name, 'SUBDESIGN', S.Module, full, sel);
     root.children = children;

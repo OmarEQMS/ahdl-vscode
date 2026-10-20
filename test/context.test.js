@@ -63,6 +63,11 @@ test('"name :" offers directions in the port list and types in VARIABLE', () => 
   assert.deepEqual(ctx(inLogic('x = name :|')), { kind: 'general' });
 });
 
+test('keywords inside strings do not count', () => {
+  assert.deepEqual(ctx(inLogic('ASSERT (VCC) REPORT "CASE ss IS" SEVERITY INFO;\n\tWHEN |')), { kind: 'general' });
+  assert.deepEqual(ctx(inLogic('ASSERT (VCC) REPORT "VARIABLE" SEVERITY INFO;\n\tname :|')), { kind: 'general' });
+});
+
 test('INCLUDE " offers include files', () => {
   assert.deepEqual(ctx('INCLUDE "|\n' + traffic), { kind: 'include', prefix: '' });
   assert.deepEqual(ctx('INCLUDE "tim|\n' + traffic), { kind: 'include', prefix: 'tim' });

@@ -5,7 +5,7 @@ VS Code extension for Intel/Altera AHDL (`.tdf`, `.inc`). Plain JavaScript, no b
 ## Layout
 
 - `src/extension.js`: entry point. Registers the completion, hover, definition and outline providers, resolves `INCLUDE` files and caches parses. The only file that imports `vscode`; providers are exported as `_test` for the tests.
-- `src/symbols.js`: comment-aware, error-tolerant symbol extractor (`parseDocument`, `findDeclaration`, `maskComments`, `stateAt`).
+- `src/symbols.js`: comment- and string-aware, error-tolerant symbol extractor (`parseDocument`, `findDeclaration`, `maskComments`, `maskCommentsAndStrings`, `stateAt`).
 - `src/context.js`: `getCompletionContext` decides what kind of completion fits at the cursor (`port`, `states`, `direction`, `type`, `include`, `general`, `none`).
 - `src/language.js`: static data: keywords, port directions, primitives and their ports, megafunction names.
 - `syntaxes/ahdl.tmLanguage.json`: TextMate grammar, scope `source.ahdl`.
@@ -27,7 +27,8 @@ VS Code extension for Intel/Altera AHDL (`.tdf`, `.inc`). Plain JavaScript, no b
 
 - Run `npm test` after every change. Only run `test:update` when a grammar change is intentional, and review the snapshot diff.
 - Keep `src/symbols.js` and `src/context.js` free of the `vscode` import so they stay unit-testable.
-- Comment masking must preserve offsets: blank out comments, never remove them.
+- Masking must preserve offsets: blank out comments and string contents, never remove them.
+- Match keywords and structure on the string-masked text, but read values from `maskComments` output. Radix literals like `H"FF"` are masked like strings.
 
 ## AHDL gotchas
 

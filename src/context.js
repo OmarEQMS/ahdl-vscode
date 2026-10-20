@@ -1,6 +1,6 @@
 'use strict';
 
-const { stateAt, maskComments, IDENT } = require('./symbols');
+const { stateAt, maskCommentsAndStrings, IDENT } = require('./symbols');
 
 function lastIndex(re, text) {
   let idx = -1;
@@ -37,7 +37,7 @@ function getCompletionContext(text, offset, doc) {
   // A lone '.' that is part of a range ("[7..") or anything else: nothing useful to offer.
   if (/\.$/.test(lineBefore)) return { kind: 'none' };
 
-  const before = maskComments(text.slice(0, offset));
+  const before = maskCommentsAndStrings(text.slice(0, offset));
   const machines = new Set(
     doc.variables.filter((v) => v.type.toUpperCase() === 'MACHINE').map((v) => v.name.toLowerCase())
   );

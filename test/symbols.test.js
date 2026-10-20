@@ -4,7 +4,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
-const { parseDocument, findDeclaration, maskComments } = require('../src/symbols');
+const { parseDocument, findDeclaration, maskComments, maskCommentsAndStrings } = require('../src/symbols');
 
 const SAMPLES = path.join(__dirname, '..', 'samples');
 const traffic = fs.readFileSync(path.join(SAMPLES, 'traffic.tdf'), 'utf8');
@@ -35,6 +35,22 @@ BEGIN
 END;
 `;
 
+// Keywords, separators and parens inside strings must not be parsed as code.
+const strings = `TITLE "SUBDESIGN fake (a : INPUT;) VARIABLE b : NODE; BEGIN";
+INCLUDE "timer8.inc";
+CONSTANT MASK = H"FF";
+PARAMETERS (DIR = "UP", NAME = "a,b");
+SUBDESIGN real
+(
+	x : INPUT = VCC;
+)
+VARIABLE
+	ss : MACHINE OF BITS (q[1..0]) WITH STATES (s0 = B"00", s1 = B"11");
+BEGIN
+	ASSERT (x) REPORT "VARIABLE z : NODE;" SEVERITY ERROR;
+END;
+`;
+
 /** Assert that every offset in `doc` points at the symbol's name in `text`. */
 function assertOffsets(text, doc) {
   const named = [
@@ -51,6 +67,11 @@ test('maskComments keeps length and line breaks', () => {
   for (let i = 0; i < traffic.length; i++) if (traffic[i] === '\n') assert.equal(masked[i], '\n', `newline at ${i}`);
   assert.ok(!masked.includes('synchronise'), 'block comment blanked');
   assert.ok(!masked.includes('100%'), 'line comment blanked');
+});
+
+test('maskCommentsAndStrings blanks string contents but keeps the quotes', () => {
+  assert.equal(maskCommentsAndStrings('a = "x;y" -- c\nb = H"FF";'), 'a = "   "     \nb = H"  ";');
+  assert.equal(maskCommentsAndStrings('x = "open\ny = 1;'), 'x = "    \ny = 1;', 'unterminated string ends at the line break');
 });
 
 test('traffic.tdf: SUBDESIGN ports with directions and defaults', () => {
@@ -123,6 +144,16 @@ test('IF ... GENERATE wrappers inside VARIABLE are tolerated', () => {
   assert.deepEqual(doc.ports.map((p) => [p.name, p.dir]), [['clk', 'INPUT'], ['q', 'OUTPUT']]);
 });
 
+test('keywords and separators inside strings are not code', () => {
+  const doc = parseDocument(strings);
+  assert.equal(doc.subdesign.name, 'real');
+  assert.deepEqual(doc.ports.map((p) => [p.name, p.dir, p.default]), [['x', 'INPUT', 'VCC']]);
+  assert.deepEqual(doc.variables.map((v) => [v.name, v.type, v.states]), [['ss', 'MACHINE', ['s0', 's1']]]);
+  assert.deepEqual(doc.includes.map((i) => i.file), ['timer8.inc']);
+  assert.deepEqual(doc.constants.map((c) => [c.name, c.value]), [['MASK', 'H"FF"']]);
+  assert.deepEqual(doc.parameters.map((p) => [p.name, p.value]), [['DIR', '"UP"'], ['NAME', '"a,b"']]);
+});
+
 test('every offset points at the symbol name in the original text', () => {
-  for (const text of [traffic, timer8, lpmCounter, generate]) assertOffsets(text, parseDocument(text));
+  for (const text of [traffic, timer8, lpmCounter, generate, strings]) assertOffsets(text, parseDocument(text));
 });

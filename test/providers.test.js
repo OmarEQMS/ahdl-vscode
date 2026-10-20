@@ -104,7 +104,8 @@ test('F12 on "timer8" jumps to samples/timer8.inc', () => {
 });
 
 test('outline root is the SUBDESIGN with ports and variables as children', () => {
-  const symbols = ext.provideDocumentSymbols(openDocument(TRAFFIC, traffic));
+  const document = openDocument(TRAFFIC, traffic);
+  const symbols = ext.provideDocumentSymbols(document);
   assert.equal(symbols.length, 1);
   const [root] = symbols;
   assert.deepEqual([root.name, root.detail, root.kind], ['traffic', 'SUBDESIGN', 'Module']);
@@ -115,4 +116,16 @@ test('outline root is the SUBDESIGN with ports and variables as children', () =>
   ]);
   assert.deepEqual(childrenOf('Enum', 'Variable'), [['ss', 'MACHINE'], ['tmr', 'timer8'], ['sync[1..0]', 'DFFE'], ['busy', 'NODE']]);
   assert.deepEqual(root.children.find((c) => c.name === 'ss').children.map((c) => c.name), ['s_red', 's_green', 's_yellow']);
+
+  // Breadcrumbs and Follow Cursor find a symbol by walking down through ranges that contain the cursor.
+  const within = (outer, inner) =>
+    document.offsetAt(outer.start) <= document.offsetAt(inner.start) && document.offsetAt(inner.end) <= document.offsetAt(outer.end);
+  const check = (s) => {
+    assert.ok(within(s.range, s.selectionRange), `${s.name}: selectionRange inside range`);
+    for (const c of s.children) {
+      assert.ok(within(s.range, c.range), `${c.name} inside ${s.name}`);
+      check(c);
+    }
+  };
+  check(root);
 });
