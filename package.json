@@ -1,0 +1,79 @@
+{
+  "name": "ahdl",
+  "displayName": "AHDL (Altera Hardware Description Language)",
+  "description": "Syntax highlighting, snippets, outline, hover and context-aware completions for Intel/Altera AHDL (.tdf / .inc).",
+  "version": "0.1.0",
+  "publisher": "omarq",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets"
+  ],
+  "keywords": [
+    "ahdl",
+    "altera",
+    "intel",
+    "quartus",
+    "fpga",
+    "tdf",
+    "hdl"
+  ],
+  "main": "./src/extension.js",
+  "activationEvents": [
+    "onLanguage:ahdl"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "ahdl",
+        "aliases": [
+          "AHDL",
+          "ahdl"
+        ],
+        "extensions": [
+          ".tdf",
+          ".ahdl"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "ahdl",
+        "scopeName": "source.ahdl",
+        "path": "./syntaxes/ahdl.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "ahdl",
+        "path": "./snippets/ahdl.json"
+      }
+    ],
+    "configuration": {
+      "title": "AHDL",
+      "properties": {
+        "ahdl.includePaths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "markdownDescription": "Extra folders searched for `INCLUDE \"file.inc\"`. Point this at Quartus' `libraries/megafunctions` folder to get port completions for LPM/ALT megafunctions."
+        },
+        "ahdl.keywordCase": {
+          "type": "string",
+          "enum": [
+            "upper",
+            "lower"
+          ],
+          "default": "upper",
+          "description": "Case used when inserting keywords and primitives from completions."
+        }
+      }
+    }
+  }
+}

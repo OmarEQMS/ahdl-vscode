@@ -1,0 +1,38 @@
+{
+  "comments": {
+    "lineComment": "--",
+    "blockComment": ["%", "%"]
+  },
+  "brackets": [
+    ["(", ")"],
+    ["[", "]"]
+  ],
+  "autoClosingPairs": [
+    { "open": "(", "close": ")" },
+    { "open": "[", "close": "]" },
+    { "open": "\"", "close": "\"", "notIn": ["string", "comment"] }
+  ],
+  "surroundingPairs": [
+    ["(", ")"],
+    ["[", "]"],
+    ["\"", "\""],
+    ["%", "%"]
+  ],
+  "wordPattern": "[A-Za-z_][A-Za-z0-9_]*|[BbOoQqHhXx]\"[0-9A-Fa-fXx_]*\"|\\d+",
+  "indentationRules": {
+    "increaseIndentPattern": {
+      "pattern": "^\\s*(BEGIN|VARIABLE|DEFAULTS|TABLE|ELSE|SUBDESIGN\\b.*|IF\\b.*\\bTHEN|ELSIF\\b.*\\bTHEN|CASE\\b.*\\bIS|WHEN\\b.*=>|FOR\\b.*\\bGENERATE)\\s*(--.*)?$",
+      "flags": "i"
+    },
+    "decreaseIndentPattern": {
+      "pattern": "^\\s*(END\\b|ELSE\\b|ELSIF\\b|WHEN\\b|\\)\\s*$)",
+      "flags": "i"
+    }
+  },
+  "folding": {
+    "markers": {
+      "start": "^\\s*--\\s*#?region\\b",
+      "end": "^\\s*--\\s*#?endregion\\b"
+    }
+  }
+}

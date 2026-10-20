@@ -1,0 +1,124 @@
+{
+  "Subdesign": {
+    "prefix": ["subdesign", "sub"],
+    "description": "SUBDESIGN skeleton with ports, VARIABLE and logic sections",
+    "body": [
+      "SUBDESIGN ${1:${TM_FILENAME_BASE}}",
+      "(",
+      "\t${2:clk}\t: INPUT;",
+      "\t${3:q[7..0]}\t: OUTPUT;",
+      ")",
+      "",
+      "VARIABLE",
+      "\t${4:ff[7..0]}\t: ${5:DFF};",
+      "",
+      "BEGIN",
+      "\t$0",
+      "END;"
+    ]
+  },
+  "If": {
+    "prefix": "if",
+    "body": ["IF ${1:condition} THEN", "\t$0", "END IF;"]
+  },
+  "If/Else": {
+    "prefix": "ifelse",
+    "body": ["IF ${1:condition} THEN", "\t$2", "ELSE", "\t$0", "END IF;"]
+  },
+  "Elsif": {
+    "prefix": "elsif",
+    "body": ["ELSIF ${1:condition} THEN", "\t$0"]
+  },
+  "Case": {
+    "prefix": "case",
+    "body": [
+      "CASE ${1:selector} IS",
+      "\tWHEN ${2:value} =>",
+      "\t\t$3",
+      "\tWHEN OTHERS =>",
+      "\t\t$0",
+      "END CASE;"
+    ]
+  },
+  "When": {
+    "prefix": "when",
+    "body": ["WHEN ${1:value} =>", "\t$0"]
+  },
+  "Truth table": {
+    "prefix": "table",
+    "body": [
+      "TABLE",
+      "\t${1:inputs} => ${2:outputs};",
+      "\t$0",
+      "END TABLE;"
+    ]
+  },
+  "Defaults": {
+    "prefix": "defaults",
+    "body": ["DEFAULTS", "\t${1:node} = ${2:GND};", "END DEFAULTS;"]
+  },
+  "State machine": {
+    "prefix": ["machine", "fsm"],
+    "description": "State machine declaration (in VARIABLE section)",
+    "body": ["${1:ss}\t: MACHINE WITH STATES (${2:idle}, ${3:run}, ${4:done});"]
+  },
+  "State machine logic": {
+    "prefix": "fsmlogic",
+    "description": "Clock/reset hookup and CASE on the state machine",
+    "body": [
+      "${1:ss}.clk = ${2:clk};",
+      "${1:ss}.reset = ${3:reset};",
+      "",
+      "CASE ${1:ss} IS",
+      "\tWHEN ${4:idle} =>",
+      "\t\t${1:ss} = ${5:run};",
+      "\tWHEN OTHERS =>",
+      "\t\t${1:ss} = ${4:idle};",
+      "END CASE;"
+    ]
+  },
+  "Register (DFF group)": {
+    "prefix": "reg",
+    "description": "Hook up a group of DFFs",
+    "body": [
+      "${1:ff}[].clk = ${2:clk};",
+      "${1:ff}[].d = ${3:d}[];",
+      "${4:q}[] = ${1:ff}[].q;"
+    ]
+  },
+  "For generate": {
+    "prefix": "forgen",
+    "body": [
+      "FOR ${1:i} IN ${2:0} TO ${3:7} GENERATE",
+      "\t$0",
+      "END GENERATE;"
+    ]
+  },
+  "Include": {
+    "prefix": "include",
+    "body": ["INCLUDE \"${1:lpm_counter}.inc\";"]
+  },
+  "Constant": {
+    "prefix": "constant",
+    "body": ["CONSTANT ${1:NAME} = ${2:0};"]
+  },
+  "Function prototype": {
+    "prefix": "function",
+    "body": [
+      "FUNCTION ${1:name} (${2:inputs})",
+      "\tRETURNS (${3:outputs});"
+    ]
+  },
+  "Parameters": {
+    "prefix": "parameters",
+    "body": ["PARAMETERS", "(", "\t${1:WIDTH} = ${2:8}", ");"]
+  },
+  "Title": {
+    "prefix": "title",
+    "body": ["TITLE \"${1:Design title}\";"]
+  },
+  "Block comment": {
+    "prefix": "%",
+    "body": ["% $0 %"]
+  }
+}

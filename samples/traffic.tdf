@@ -1,0 +1,65 @@
+TITLE "Traffic light controller (AHDL sample)";
+
+-- Open this file with the extension installed and try:
+--   * type "ss." on an empty line in the logic section  -> clk, reset, ena
+--   * type "tmr." -> ports read from timer8.inc
+--   * type "ss = " -> the machine's states
+--   * hover / F12 on timer8, ss, DFFE, YELLOW_TICKS
+
+INCLUDE "timer8.inc";
+
+CONSTANT YELLOW_TICKS = 3;
+
+PARAMETERS
+(
+	GREEN_TICKS = 8
+);
+
+SUBDESIGN traffic
+(
+	clk, reset        : INPUT;
+	car_waiting       : INPUT = GND;
+	red, yellow, green : OUTPUT;
+	debug[1..0]       : OUTPUT;
+)
+
+VARIABLE
+	ss       : MACHINE WITH STATES (s_red, s_green, s_yellow);
+	tmr      : timer8;
+	sync[1..0] : DFFE;
+	busy     : NODE;
+
+BEGIN
+	% synchronise the async input %
+	sync[].clk = clk;
+	sync[].ena = VCC;
+	sync[0].d = car_waiting;
+	sync[1].d = sync[0].q;
+
+	ss.clk   = clk;
+	ss.reset = reset;
+	tmr.clock = clk;
+
+	DEFAULTS
+		red = GND; yellow = GND; green = GND;
+	END DEFAULTS;
+
+	CASE ss IS
+		WHEN s_red =>
+			red = VCC;
+			IF sync[1].q & tmr.done THEN
+				ss = s_green;
+				tmr.load = VCC;
+				tmr.data[] = GREEN_TICKS;
+			END IF;
+		WHEN s_green =>
+			green = VCC;
+			IF tmr.done THEN ss = s_yellow; tmr.load = VCC; tmr.data[] = YELLOW_TICKS; END IF;
+		WHEN s_yellow =>
+			yellow = VCC;
+			IF tmr.done THEN ss = s_red; END IF;
+	END CASE;
+
+	busy = !tmr.done;   -- 100% combinational
+	debug[] = B"0X" # H"0";
+END;

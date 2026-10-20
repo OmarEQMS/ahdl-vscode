@@ -1,0 +1,143 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "AHDL",
+  "scopeName": "source.ahdl",
+  "fileTypes": ["tdf", "inc", "ahdl"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#numbers" },
+    { "include": "#strings" },
+    { "include": "#subdesign-header" },
+    { "include": "#function-header" },
+    { "include": "#keywords" },
+    { "include": "#primitives" },
+    { "include": "#megafunctions" },
+    { "include": "#operators" },
+    { "include": "#member-access" },
+    { "include": "#punctuation" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-dash.ahdl",
+          "begin": "--",
+          "beginCaptures": { "0": { "name": "punctuation.definition.comment.ahdl" } },
+          "end": "$",
+          "patterns": [{ "include": "#todo" }]
+        },
+        {
+          "name": "comment.block.percentage.ahdl",
+          "begin": "%",
+          "beginCaptures": { "0": { "name": "punctuation.definition.comment.begin.ahdl" } },
+          "end": "%",
+          "endCaptures": { "0": { "name": "punctuation.definition.comment.end.ahdl" } },
+          "patterns": [{ "include": "#todo" }]
+        }
+      ]
+    },
+    "todo": {
+      "match": "(?i)\\b(TODO|FIXME|XXX|NOTE)\\b",
+      "name": "keyword.todo.ahdl"
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "comment": "B\"0101\", O\"17\", Q\"17\", H\"FF\", X\"FF\" (binary may contain X don't-cares)",
+          "match": "(?i)\\b([BOQHX])(\")([0-9A-FX_]*)(\")",
+          "captures": {
+            "0": { "name": "constant.numeric.radix.ahdl" },
+            "1": { "name": "storage.type.numeric.ahdl" },
+            "2": { "name": "punctuation.definition.numeric.begin.ahdl" },
+            "4": { "name": "punctuation.definition.numeric.end.ahdl" }
+          }
+        },
+        {
+          "match": "\\b[0-9]+\\b",
+          "name": "constant.numeric.decimal.ahdl"
+        }
+      ]
+    },
+    "strings": {
+      "name": "string.quoted.double.ahdl",
+      "begin": "\"",
+      "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.ahdl" } },
+      "end": "\"",
+      "endCaptures": { "0": { "name": "punctuation.definition.string.end.ahdl" } }
+    },
+    "subdesign-header": {
+      "match": "(?i)\\b(SUBDESIGN)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+      "captures": {
+        "1": { "name": "storage.type.subdesign.ahdl" },
+        "2": { "name": "entity.name.function.subdesign.ahdl" }
+      }
+    },
+    "function-header": {
+      "match": "(?i)\\b(FUNCTION)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+      "captures": {
+        "1": { "name": "storage.type.function.ahdl" },
+        "2": { "name": "entity.name.function.prototype.ahdl" }
+      }
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "match": "(?i)\\b(IF|THEN|ELSE|ELSIF|CASE|IS|WHEN|OTHERS|FOR|GENERATE|TO|TABLE|BEGIN|END|DEFAULTS)\\b",
+          "name": "keyword.control.ahdl"
+        },
+        {
+          "match": "(?i)\\b(SUBDESIGN|VARIABLE|CONSTANT|DEFINE|FUNCTION|RETURNS|PARAMETERS|OPTIONS|INCLUDE|TITLE|DESIGN|DEVICE|NODE|TRI_STATE_NODE|MACHINE|OF|BITS|STATES|WITH|ASSERT|REPORT|SEVERITY|CLIQUE|CONNECTED_PINS|BURIED|HELP_ID)\\b",
+          "name": "storage.type.ahdl"
+        },
+        {
+          "match": "(?i)\\b(INPUT|OUTPUT|BIDIR)\\b",
+          "name": "storage.modifier.direction.ahdl"
+        },
+        {
+          "match": "(?i)\\b(VCC|GND)\\b",
+          "name": "constant.language.ahdl"
+        },
+        {
+          "match": "(?i)\\b(ERROR|WARNING|INFO)\\b",
+          "name": "constant.language.severity.ahdl"
+        },
+        {
+          "match": "(?i)\\b(AND|OR|NOT|XOR|NAND|NOR|XNOR|DIV|MOD|LOG2|CEIL|FLOOR|USED)\\b",
+          "name": "keyword.operator.word.ahdl"
+        }
+      ]
+    },
+    "primitives": {
+      "match": "(?i)\\b(DFFEAS|DFFEA|DFFE|DFF|JKFFE|JKFF|SRFFE|SRFF|TFFE|TFF|LATCH|LCELL|MCELL|SOFT|GLOBAL|CARRY_SUM|CARRY|CASCADE|EXP|OPENDRN|TRI|WIRE|ALT_INBUF|ALT_OUTBUF_TRI|ALT_OUTBUF|ALT_IOBUF|ALT_BIDIR_BUF)\\b",
+      "name": "support.type.primitive.ahdl"
+    },
+    "megafunctions": {
+      "match": "(?i)\\b(lpm_[A-Za-z0-9_]+|alt(?:syncram|dpram|pll|shift_taps|mult_add|mult_accum|clkctrl|accumulate|squarer|sqrt|ddio_[A-Za-z0-9_]+|fp_[A-Za-z0-9_]+|lvds_[A-Za-z0-9_]+|ecc_[A-Za-z0-9_]+)|scfifo|dcfifo|csfifo|busmux|divide)\\b",
+      "name": "support.function.megafunction.ahdl"
+    },
+    "operators": {
+      "patterns": [
+        { "match": "\\.\\.", "name": "keyword.operator.range.ahdl" },
+        { "match": "=>", "name": "keyword.operator.arrow.ahdl" },
+        { "match": "==|!=|<=|>=|<|>", "name": "keyword.operator.comparison.ahdl" },
+        { "match": "!&|!#|!\\$|&|#|!|\\$", "name": "keyword.operator.logical.ahdl" },
+        { "match": "\\+|-|\\*|/|\\^", "name": "keyword.operator.arithmetic.ahdl" },
+        { "match": "=", "name": "keyword.operator.assignment.ahdl" }
+      ]
+    },
+    "member-access": {
+      "match": "(?<!\\.)(\\.)(?!\\.)([A-Za-z_][A-Za-z0-9_]*)",
+      "captures": {
+        "1": { "name": "punctuation.accessor.ahdl" },
+        "2": { "name": "variable.other.member.port.ahdl" }
+      }
+    },
+    "punctuation": {
+      "patterns": [
+        { "match": ";", "name": "punctuation.terminator.statement.ahdl" },
+        { "match": ",", "name": "punctuation.separator.comma.ahdl" },
+        { "match": ":", "name": "punctuation.separator.colon.ahdl" }
+      ]
+    }
+  }
+}
