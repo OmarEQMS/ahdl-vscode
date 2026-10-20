@@ -7,7 +7,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/omarq/ahdl-vscode.git"
+    "url": "https://github.com/OmarEQMS/ahdl-vscode.git"
   },
   "engines": {
     "vscode": "^1.75.0"
@@ -31,7 +31,7 @@
   ],
   "scripts": {
     "test": "node --test \"test/**/*.test.js\"",
-    "test:update": "node scripts/test-update.js",
+    "test:update": "set \"UPDATE_SNAPSHOTS=1\" && npm test",
     "package": "vsce package --skip-license",
     "install-local": "npm run package && node scripts/install-local.js"
   },

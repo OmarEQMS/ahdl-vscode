@@ -13,12 +13,12 @@ VS Code extension for Intel/Altera AHDL (`.tdf`, `.inc`). Plain JavaScript, no b
 - `language-configuration.json`: comment toggling, brackets, indentation rules.
 - `samples/`: `traffic.tdf` and `timer8.inc`. Used by the tests and opened by F5.
 - `test/`: `node:test` suites. `__snapshots__/` holds the grammar token snapshots; `mocks/vscode.js` stands in for the `vscode` module.
-- `scripts/`: helpers behind `test:update` and `install-local`.
+- `scripts/install-local.js`: helper behind `install-local`.
 
 ## Commands
 
 - `npm test`: run all tests.
-- `npm run test:update`: rewrite the grammar snapshots.
+- `npm run test:update`: rewrite the grammar snapshots. Uses cmd.exe's `set`, so it only works on Windows.
 - `npm run package`: build `ahdl-<version>.vsix`.
 - `npm run install-local`: package, then install the .vsix into VS Code.
 - F5 in VS Code: Extension Development Host with `samples/` open.
