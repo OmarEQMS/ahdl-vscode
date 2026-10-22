@@ -2,7 +2,7 @@
   "name": "ahdl",
   "displayName": "AHDL (Altera Hardware Description Language)",
   "description": "Syntax highlighting, snippets, outline, hover and context-aware completions for Intel/Altera AHDL (.tdf / .inc).",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "omarq",
   "license": "MIT",
   "repository": {

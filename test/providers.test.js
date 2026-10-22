@@ -3,6 +3,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const Module = require('module');
 
@@ -54,13 +55,28 @@ function openDocument(file, text) {
   };
 }
 
+/** `src` (containing a `|` cursor) opened as `file`. */
+function withCursor(file, src) {
+  const offset = src.indexOf('|');
+  const document = openDocument(file, src.slice(0, offset) + src.slice(offset + 1));
+  return { document, position: document.positionAt(offset) };
+}
+
 /** traffic.tdf with `snippet` (containing a `|` cursor) as a new line before the final END; */
 function trafficWith(snippet) {
   const at = traffic.search(/^END;/m);
-  const src = traffic.slice(0, at) + `\t${snippet}\n` + traffic.slice(at);
-  const offset = src.indexOf('|');
-  const document = openDocument(TRAFFIC, src.slice(0, offset) + src.slice(offset + 1));
-  return { document, position: document.positionAt(offset) };
+  return withCursor(TRAFFIC, traffic.slice(0, at) + `\t${snippet}\n` + traffic.slice(at));
+}
+
+/** A throwaway Quartus project folder holding proj.qpf plus `files` (relative path → contents). */
+function quartusProject(t, files) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'ahdl-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  for (const [rel, text] of Object.entries({ 'proj.qpf': '', ...files })) {
+    fs.mkdirSync(path.dirname(path.join(root, rel)), { recursive: true });
+    fs.writeFileSync(path.join(root, rel), text);
+  }
+  return root;
 }
 
 /** traffic.tdf as-is, with the cursor `delta` characters into the first match of `needle`. */
@@ -101,6 +117,29 @@ test('F12 on "timer8" jumps to samples/timer8.inc', () => {
   const loc = ext.provideDefinition(document, position);
   assert.equal(loc.uri.fsPath, path.join(SAMPLES, 'timer8.inc'));
   assert.deepEqual({ ...loc.range.start }, { line: 1, character: 'FUNCTION '.length });
+});
+
+test('INCLUDE paths resolve from the Quartus project folder', (t) => {
+  const proj = quartusProject(t, { 'src/include/regs.inc': 'FUNCTION reg8 (d[7..0], clk) RETURNS (q[7..0]);\n' });
+  const file = path.join(proj, 'src', 'core', 'core.tdf');
+  const src = 'INCLUDE "src/include/regs.inc";\nSUBDESIGN core (clk : INPUT)\nVARIABLE r : reg8;\nBEGIN\n\t|\nEND;\n';
+
+  const completion = withCursor(file, src.replace('|', 'r.|'));
+  assert.deepEqual(ext.provideCompletionItems(completion.document, completion.position).map((i) => i.label), ['d', 'clk', 'q']);
+
+  const { document } = withCursor(file, src);
+  const loc = ext.provideDefinition(document, new vscode.Position(0, 'INCLUDE "sr'.length));
+  assert.equal(loc.uri.fsPath, path.join(proj, 'src', 'include', 'regs.inc'));
+});
+
+test('the Quartus project folder is searched before the document folder', (t) => {
+  const proj = quartusProject(t, {
+    'lib.inc': 'FUNCTION lib (a) RETURNS (b);\n',
+    'src/lib.inc': 'FUNCTION lib (x) RETURNS (y);\n'
+  });
+  const { document, position } = withCursor(path.join(proj, 'src', 'top.tdf'),
+    'INCLUDE "lib.inc";\nSUBDESIGN top (clk : INPUT)\nVARIABLE l : lib;\nBEGIN\n\tl.|\nEND;\n');
+  assert.deepEqual(ext.provideCompletionItems(document, position).map((i) => i.label), ['a', 'b']);
 });
 
 test('outline root is the SUBDESIGN with ports and variables as children', () => {

@@ -26,6 +26,8 @@ Language support for **AHDL** (Altera Hardware Description Language), the Text D
 | `ahdl.includePaths` | `[]` | Extra folders searched for `INCLUDE` files. Add Quartus' `libraries/megafunctions` folder to get real ports for `lpm_counter`, `altsyncram`, etc. `${workspaceFolder}` is supported. |
 | `ahdl.keywordCase` | `upper` | Case used when completions insert keywords and primitives. |
 
+`INCLUDE` paths resolve the way Quartus resolves them: from the folder of the nearest `.qpf` above the file first, then the file's own folder, the workspace folders and `ahdl.includePaths`. Relative `ahdl.includePaths` entries are resolved from that project folder, or from the file's folder when there is no `.qpf`.
+
 `.inc` is shared by many languages, so the extension only claims `.tdf` and `.ahdl` automatically. To treat `.inc` files as AHDL in a project, add this to `.vscode/settings.json`:
 
 ```json

@@ -36,4 +36,5 @@ VS Code extension for Intel/Altera AHDL (`.tdf`, `.inc`). Plain JavaScript, no b
 - Comments are `--` to end of line or `% ... %`, which can span lines. A `%` inside a `--` comment does not open a block.
 - `..` is a range (`q[7..0]`), not a port access (`.q`).
 - One SUBDESIGN per `.tdf`.
+- Quartus resolves `INCLUDE "a/b.inc"` from the project folder (where the `.qpf` is), not from the including file.
 - State machines have implicit `.clk`, `.reset` and `.ena` ports.

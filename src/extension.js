@@ -42,9 +42,31 @@ function parseFile(file) {
   return entry;
 }
 
+/** folder → nearest folder at or above it holding a Quartus project (.qpf), or null. Cleared when a .qpf is created or deleted. */
+const projectCache = new Map();
+
+function projectDir(dir) {
+  if (projectCache.has(dir)) return projectCache.get(dir);
+  let found = null;
+  for (let d = dir; ; d = path.dirname(d)) {
+    let entries = [];
+    try { entries = fs.readdirSync(d); } catch { /* unreadable: keep walking up */ }
+    if (entries.some((f) => /\.qpf$/i.test(f))) { found = d; break; }
+    if (path.dirname(d) === d) break;
+  }
+  projectCache.set(dir, found);
+  return found;
+}
+
 function searchDirs(document) {
   const dirs = [];
-  if (document.uri.scheme === 'file') dirs.push(path.dirname(document.uri.fsPath));
+  if (document.uri.scheme === 'file') {
+    // Quartus resolves INCLUDE paths from the project folder, not from the including file.
+    const own = path.dirname(document.uri.fsPath);
+    const project = projectDir(own);
+    if (project) dirs.push(project);
+    dirs.push(own);
+  }
   for (const f of vscode.workspace.workspaceFolders || []) dirs.push(f.uri.fsPath);
   const cfg = vscode.workspace.getConfiguration('ahdl', document.uri).get('includePaths') || [];
   for (const p of cfg) {
@@ -340,7 +362,11 @@ function provideDocumentSymbols(document) {
 
 function activate(context) {
   const selector = { language: 'ahdl' };
+  const qpf = vscode.workspace.createFileSystemWatcher('**/*.qpf', false, true, false);
   context.subscriptions.push(
+    qpf,
+    qpf.onDidCreate(() => projectCache.clear()),
+    qpf.onDidDelete(() => projectCache.clear()),
     vscode.languages.registerCompletionItemProvider(selector, { provideCompletionItems }, '.', '"'),
     vscode.languages.registerHoverProvider(selector, { provideHover }),
     vscode.languages.registerDefinitionProvider(selector, { provideDefinition }),
