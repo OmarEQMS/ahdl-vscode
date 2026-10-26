@@ -2,6 +2,15 @@
 
 const { stateAt, maskCommentsAndStrings, IDENT } = require('./symbols');
 
+/**
+ * A port access ending at the cursor (anchor it with `$`): `inst.`, `inst[].q`, `inst[3..0].d`, or an
+ * entry of a port group `inst.(clk, data[7..0], cl`. Group 1 is the instance, group 2 the partial port name.
+ */
+const PORT_ACCESS =
+  `(${IDENT})\\s*(?:\\[[^\\]]*\\])?` + // inst, inst[], inst[3..0]
+  `\\.(?:\\(\\s*(?:${IDENT}\\s*(?:\\[[^\\]]*\\])?\\s*,\\s*)*)?` + // "." or ".(" followed by the ports already listed
+  `(${IDENT})?`;
+
 function lastIndex(re, text) {
   let idx = -1;
   let m;
@@ -29,8 +38,8 @@ function getCompletionContext(text, offset, doc) {
   }
   if (state !== 'code') return { kind: 'none' };
 
-  // inst.port / inst[].port / inst[3..0].port
-  const port = new RegExp(`(${IDENT})\\s*(?:\\[[^\\]]*\\])?\\.(${IDENT})?$`).exec(lineBefore);
+  // inst.port / inst[].port / inst[3..0].port, and port groups: ff[].(clk, clrn) = (clock, reset);
+  const port = new RegExp(`${PORT_ACCESS}$`).exec(lineBefore);
   if (port && lineBefore[port.index - 1] !== '.') {
     return { kind: 'port', instance: port[1], prefix: port[2] || '' };
   }
@@ -82,4 +91,4 @@ function getCompletionContext(text, offset, doc) {
   return { kind: 'general' };
 }
 
-module.exports = { getCompletionContext };
+module.exports = { getCompletionContext, PORT_ACCESS };

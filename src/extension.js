@@ -4,7 +4,7 @@ const vscode = require('vscode');
 const fs = require('fs');
 const path = require('path');
 const { parseDocument, findDeclaration, IDENT } = require('./symbols');
-const { getCompletionContext } = require('./context');
+const { getCompletionContext, PORT_ACCESS } = require('./context');
 const { KEYWORDS, DIRECTIONS, PRIMITIVES, MACHINE_PORTS, PORT_DOCS, MEGAFUNCTIONS } = require('./language');
 
 const K = vscode.CompletionItemKind;
@@ -159,11 +159,13 @@ function offsetToPosition(text, offset) {
 // Completion
 // ---------------------------------------------------------------------------
 
-function provideCompletionItems(document, position) {
+function provideCompletionItems(document, position, _token, context) {
   const text = document.getText();
   const offset = document.offsetAt(position);
   const doc = parsed(document);
   const ctx = getCompletionContext(text, offset, doc);
+  // "(" is a trigger character only so that "inst.(" pops the port list; any other parenthesis stays quiet.
+  if (context && context.triggerCharacter === '(' && ctx.kind !== 'port') return [];
   const items = [];
 
   switch (ctx.kind) {
@@ -252,9 +254,9 @@ function provideHover(document, position) {
   if (!w) return null;
   const doc = parsed(document);
 
-  // Port after '.' → describe it using the instance type.
+  // Port after '.' or inside a port group "inst.(a, b" → describe it using the instance type.
   const line = document.lineAt(position.line).text.slice(0, w.range.start.character);
-  const inst = new RegExp(`(${IDENT})\\s*(?:\\[[^\\]]*\\])?\\.$`).exec(line);
+  const inst = new RegExp(`${PORT_ACCESS}$`).exec(line);
   if (inst) {
     const ports = portsOf(document, inst[1]);
     if (ports) {
@@ -367,7 +369,7 @@ function activate(context) {
     qpf,
     qpf.onDidCreate(() => projectCache.clear()),
     qpf.onDidDelete(() => projectCache.clear()),
-    vscode.languages.registerCompletionItemProvider(selector, { provideCompletionItems }, '.', '"'),
+    vscode.languages.registerCompletionItemProvider(selector, { provideCompletionItems }, '.', '"', '('),
     vscode.languages.registerHoverProvider(selector, { provideHover }),
     vscode.languages.registerDefinitionProvider(selector, { provideDefinition }),
     vscode.languages.registerDocumentSymbolProvider(selector, { provideDocumentSymbols }),

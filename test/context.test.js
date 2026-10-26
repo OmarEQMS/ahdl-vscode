@@ -38,6 +38,15 @@ test('"sync[1.." is a range, not a port access', () => {
   assert.deepEqual(ctx(inLogic('sync[1..|')), { kind: 'none' });
 });
 
+test('every entry of a port group "sync[].(clk, " offers the ports of sync', () => {
+  assert.deepEqual(ctx(inLogic('sync[].(|')), { kind: 'port', instance: 'sync', prefix: '' });
+  assert.deepEqual(ctx(inLogic('sync[].(clk, cl|')), { kind: 'port', instance: 'sync', prefix: 'cl' });
+  assert.deepEqual(ctx(inLogic('tmr.(data[7..0], |')), { kind: 'port', instance: 'tmr', prefix: '' });
+  // The right-hand side is an ordinary group of signals.
+  assert.deepEqual(ctx(inLogic('sync[].(clk, clrn) = (clk, |')), { kind: 'general' });
+  assert.deepEqual(ctx(inLogic('IF (|')), { kind: 'general' });
+});
+
 test('"ss = " and "IF ss == " offer states', () => {
   assert.deepEqual(ctx(inLogic('ss = |')), { kind: 'states', machine: 'ss', prefix: '' });
   assert.deepEqual(ctx(inLogic('IF ss == |')), { kind: 'states', machine: 'ss', prefix: '' });

@@ -82,7 +82,7 @@
     "keywords": {
       "patterns": [
         {
-          "match": "(?i)\\b(IF|THEN|ELSE|ELSIF|CASE|IS|WHEN|OTHERS|FOR|GENERATE|TO|TABLE|BEGIN|END|DEFAULTS)\\b",
+          "match": "(?i)\\b(IF|THEN|ELSE|ELSIF|CASE|IS|WHEN|OTHERS|FOR|IN|TO|GENERATE|TABLE|BEGIN|END|DEFAULTS)\\b",
           "name": "keyword.control.ahdl"
         },
         {
@@ -102,8 +102,9 @@
           "name": "constant.language.severity.ahdl"
         },
         {
+          "comment": "The default VS Code themes color keyword.operator.wordlike like a keyword but leave plain keyword.operator uncolored",
           "match": "(?i)\\b(AND|OR|NOT|XOR|NAND|NOR|XNOR|DIV|MOD|LOG2|CEIL|FLOOR|USED)\\b",
-          "name": "keyword.operator.word.ahdl"
+          "name": "keyword.operator.wordlike.ahdl"
         }
       ]
     },
@@ -126,11 +127,33 @@
       ]
     },
     "member-access": {
-      "match": "(?<!\\.)(\\.)(?!\\.)([A-Za-z_][A-Za-z0-9_]*)",
-      "captures": {
-        "1": { "name": "punctuation.accessor.ahdl" },
-        "2": { "name": "variable.other.member.port.ahdl" }
-      }
+      "patterns": [
+        {
+          "comment": "inst.(clk, clrn, data[7..0]): a group of ports. A stray '=' or ';' ends an unclosed group.",
+          "name": "meta.port-group.ahdl",
+          "begin": "(?<!\\.)(\\.)(\\()",
+          "beginCaptures": {
+            "1": { "name": "punctuation.accessor.ahdl" },
+            "2": { "name": "punctuation.section.group.begin.ahdl" }
+          },
+          "end": "(\\))|(?=[;=])",
+          "endCaptures": { "1": { "name": "punctuation.section.group.end.ahdl" } },
+          "patterns": [
+            { "include": "#comments" },
+            { "include": "#numbers" },
+            { "match": "[A-Za-z_][A-Za-z0-9_]*", "name": "variable.other.member.port.ahdl" },
+            { "include": "#operators" },
+            { "include": "#punctuation" }
+          ]
+        },
+        {
+          "match": "(?<!\\.)(\\.)(?!\\.)([A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": { "name": "punctuation.accessor.ahdl" },
+            "2": { "name": "variable.other.member.port.ahdl" }
+          }
+        }
+      ]
     },
     "punctuation": {
       "patterns": [

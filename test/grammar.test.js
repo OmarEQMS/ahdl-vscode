@@ -134,6 +134,33 @@ test('".." is a range operator, ".q" is a member access', async () => {
   assert.deepEqual(await scopesOf(src, 'q;'), ['variable.other.member.port.ahdl']);
 });
 
+test('word operators are "wordlike", which the default themes color; symbols keep the operator scope', async () => {
+  const src = 'x = a AND NOT b # c;';
+  assert.deepEqual(await scopesOf(src, 'AND'), ['keyword.operator.wordlike.ahdl']);
+  assert.deepEqual(await scopesOf(src, 'NOT'), ['keyword.operator.wordlike.ahdl']);
+  assert.deepEqual(await scopesOf(src, '#'), ['keyword.operator.logical.ahdl']);
+});
+
+test('"IN" of FOR ... IN ... TO is a keyword', async () => {
+  assert.deepEqual(await scopesOf('FOR i IN 0 TO 7 GENERATE', 'IN'), ['keyword.control.ahdl']);
+});
+
+test('names inside a port group "ff[].(clk, d[7..0])" are members; the right-hand group is not', async () => {
+  const src = 'ff[].(clk, d[7..0]) = (clock, data[]);';
+  assert.ok(has(await scopesOf(src, 'clk'), 'variable.other.member.port.ahdl'));
+  assert.ok(has(await scopesOf(src, 'd[7'), 'variable.other.member.port.ahdl'));
+  assert.ok(has(await scopesOf(src, '..'), 'keyword.operator.range.ahdl'));
+  assert.deepEqual(await scopesOf(src, '.('), ['meta.port-group.ahdl', 'punctuation.accessor.ahdl']);
+  assert.ok(!has(await scopesOf(src, 'clock'), 'variable.other.member.port.ahdl'));
+  assert.ok(!has(await scopesOf(src, 'data'), 'variable.other.member.port.ahdl'));
+  assert.ok(!(await scopesOf(src, 'clock')).some((s) => s.startsWith('meta.port-group')), 'the group ends at ")"');
+});
+
+test('an unclosed port group ends at "=" instead of swallowing the line', async () => {
+  const src = 'ff[].(clk, clrn = (clock, reset);';
+  assert.ok(!(await scopesOf(src, 'clock')).some((s) => s.startsWith('meta.port-group')));
+});
+
 test('keywords match case-insensitively', async () => {
   const src = 'Variable r : dffe;\nbegin\nif a THEN r.d = vcc; End If;\nend;';
   assert.deepEqual(await scopesOf(src, 'Variable'), ['storage.type.ahdl']);

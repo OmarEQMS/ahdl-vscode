@@ -106,6 +106,26 @@ test('completions after "sync[0]." are the DFFE ports', () => {
   assert.ok(items.every((i) => i.kind === 'Field'));
 });
 
+test('completions inside "sync[].(clk, " are the DFFE ports', () => {
+  const { document, position } = trafficWith('sync[].(clk, |');
+  assert.deepEqual(ext.provideCompletionItems(document, position).map((i) => i.label), ['d', 'clk', 'clrn', 'prn', 'ena', 'q']);
+});
+
+test('typing "(" pops completions after "inst." only', () => {
+  const byParen = { triggerKind: 'TriggerCharacter', triggerCharacter: '(' };
+  const group = trafficWith('sync[].(|');
+  assert.ok(ext.provideCompletionItems(group.document, group.position, undefined, byParen).length > 0);
+  const cond = trafficWith('IF (|');
+  assert.deepEqual(ext.provideCompletionItems(cond.document, cond.position, undefined, byParen), []);
+  assert.ok(ext.provideCompletionItems(cond.document, cond.position).length > 0, 'Ctrl+Space still offers the general list');
+});
+
+test('hover on "ena" inside "sync[].(clk, ena)" says it is an input of DFFE', () => {
+  const { document, position } = trafficAt('sync[].(clk, ena)', 'sync[].(clk, '.length + 1);
+  const hover = ext.provideHover(document, position);
+  assert.match(hover.contents.value, /^`sync\.ena` — input of \*\*DFFE\*\*/);
+});
+
 test('hover on "tmr.done" says it is an output of timer8', () => {
   const { document, position } = trafficAt('tmr.done', 'tmr.'.length + 1);
   const hover = ext.provideHover(document, position);

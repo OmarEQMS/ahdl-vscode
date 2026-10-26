@@ -3,6 +3,7 @@ TITLE "Traffic light controller (AHDL sample)";
 -- Open this file with the extension installed and try:
 --   * type "ss." on an empty line in the logic section  -> clk, reset, ena
 --   * type "tmr." -> ports read from timer8.inc
+--   * type "sync[].(" -> the DFFE ports, and again after each comma of the group
 --   * type "ss = " -> the machine's states
 --   * hover / F12 on timer8, ss, DFFE, YELLOW_TICKS
 
@@ -31,8 +32,7 @@ VARIABLE
 
 BEGIN
 	% synchronise the async input %
-	sync[].clk = clk;
-	sync[].ena = VCC;
+	sync[].(clk, ena) = (clk, VCC);
 	sync[0].d = car_waiting;
 	sync[1].d = sync[0].q;
 
@@ -47,7 +47,7 @@ BEGIN
 	CASE ss IS
 		WHEN s_red =>
 			red = VCC;
-			IF sync[1].q & tmr.done THEN
+			IF sync[1].q AND tmr.done THEN
 				ss = s_green;
 				tmr.load = VCC;
 				tmr.data[] = GREEN_TICKS;

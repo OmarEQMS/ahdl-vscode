@@ -38,3 +38,4 @@ VS Code extension for Intel/Altera AHDL (`.tdf`, `.inc`). Plain JavaScript, no b
 - One SUBDESIGN per `.tdf`.
 - Quartus resolves `INCLUDE "a/b.inc"` from the project folder (where the `.qpf` is), not from the including file.
 - State machines have implicit `.clk`, `.reset` and `.ena` ports.
+- `inst.(a, b) = (x, y);` is a port group: it connects several ports at once. The right-hand side is an ordinary group of signals or literals.
